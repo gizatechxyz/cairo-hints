@@ -58,7 +58,7 @@ use num_traits::{cast::ToPrimitive, Zero};
 use std::collections::HashMap;
 
 use crate::{rpc_hint_processor::Rpc1HintProcessor, Error};
-
+use cairo_vm::types::layout::CairoLayoutParams;
 /// Configuration parameters for a cairo run
 #[derive(Debug)]
 pub struct Cairo1RunConfig<'a> {
@@ -237,8 +237,10 @@ pub fn cairo_run_program(
     let mut runner = CairoRunner::new_v2(
         &program,
         cairo_run_config.layout,
+        Some(CairoLayoutParams::default()),
         runner_mode,
-        cairo_run_config.trace_enabled,
+        cairo_run_config.relocate_mem,
+        cairo_run_config.proof_mode,
     )?;
     let end = runner.initialize(cairo_run_config.proof_mode)?;
     load_arguments(&mut runner, &cairo_run_config, main_func, initial_gas)?;

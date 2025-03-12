@@ -134,7 +134,7 @@ pub fn run_1(
     entry_func_name: &str,
     proof_mode: bool,
     finalize_builtins: Option<bool>,
-    append_return_values: Option<bool>
+    append_return_values: Option<bool>,
 ) -> Result<(Option<String>, CairoRunner), Error> {
     let cairo_run_config = Cairo1RunConfig {
         proof_mode: proof_mode,
@@ -152,7 +152,7 @@ pub fn run_1(
         cairo_run_config,
         configuration,
         entry_func_name,
-        schema
+        schema,
     )?;
 
     if let Some(file_path) = air_public_input {
@@ -186,13 +186,15 @@ pub fn run_1(
     }
 
     if let Some(ref file_path) = cairo_pie_output {
-        runner.get_cairo_pie()?.write_zip_file(file_path)?
+        runner
+            .get_cairo_pie()?
+            .write_zip_file(file_path, proof_mode)?
     }
 
     if let Some(trace_path) = trace_file {
         let relocated_trace = runner
             .relocated_trace
-            .as_ref() 
+            .as_ref()
             .ok_or(Error::Trace(TraceError::TraceNotRelocated))?;
         let trace_file = std::fs::File::create(trace_path)?;
         let mut trace_writer =

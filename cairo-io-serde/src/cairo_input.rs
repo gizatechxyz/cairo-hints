@@ -34,9 +34,12 @@ fn parse_schema(value: &Value, schema_name: &str, schema: &Schema) -> Result<Vec
     // Iterate over the fields in the order in which they are defined.
     // This is important because the order of fields in the structure affects how they are transmitted in the VM.
     for field in &schema_def.fields {
-        let field_value = value
-            .get(&field.name)
-            .ok_or_else(|| format!("Missing field: {} from schema {} in {}", field.name, schema_name, value))?;
+        let field_value = value.get(&field.name).ok_or_else(|| {
+            format!(
+                "Missing field: {} from schema {} in {}",
+                field.name, schema_name, value
+            )
+        })?;
 
         let parsed = parse_value(field_value, &field.ty, schema)?;
         args.extend(parsed);

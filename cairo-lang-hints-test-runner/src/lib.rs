@@ -174,9 +174,9 @@ impl TestCompiler {
             let mut b = RootDatabase::builder();
             b.detect_corelib();
             b.with_cfg(CfgSet::from_iter([Cfg::name("test")]));
-            b.with_plugin_suite(test_plugin_suite());
+            b.with_default_plugin_suite(test_plugin_suite());
             if starknet {
-                b.with_plugin_suite(starknet_plugin_suite());
+                b.with_default_plugin_suite(starknet_plugin_suite());
             }
 
             b.build()?
@@ -204,13 +204,17 @@ impl TestCompiler {
         let config = TestsCompilationConfig {
             starknet: true,
             add_statements_functions: true,
+            add_statements_code_locations: true,
+            contract_crate_ids: None,    // TODO: Add contract crate ids
+            contract_declarations: None, // TODO: Add contract declarations
+            executable_crate_ids: None,  // TODO: Add executable crate ids
         };
 
         compile_test_prepared_db(
             &self.db,
             config,
             self.main_crate_ids.clone(),
-            self.test_crate_ids.clone(),
+            DiagnosticsReporter::stderr(),
         )
     }
 }
@@ -254,7 +258,7 @@ pub fn filter_test_cases(
             named_tests: named_tests,
             contracts_info: compiled.metadata.contracts_info,
             function_set_costs: compiled.metadata.function_set_costs,
-            statements_functions: compiled.metadata.statements_functions,
+            statements_locations: compiled.metadata.statements_locations,
         },
     };
 
@@ -330,7 +334,7 @@ pub fn run_tests(
                     &name,
                     false,
                     None,
-                    None
+                    None,
                 );
 
                 Ok((

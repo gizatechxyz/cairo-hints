@@ -114,7 +114,7 @@ pub(crate) fn mk_cairo(
         fsx::write(
             &filename,
             indoc! {r#"
-            scarb 2.7.0
+            scarb 2.11.1
         "#},
         )?;
     }
